@@ -5,6 +5,7 @@ import Services from './components/Services';
 import CTAContact from './components/CTAContact';
 import CaseStudies from './components/CaseStudies';
 import ScrollProgress from './components/ScrollProgress';
+import ScrollControl from './components/ScrollControl';
 
 function Navbar() {
   return (
@@ -45,6 +46,7 @@ export default function App() {
       <Navbar />
       <main>
         <Hero3D />
+        <ScrollControl />
         <MarqueeLogos />
         <Services />
         <CaseStudies />
