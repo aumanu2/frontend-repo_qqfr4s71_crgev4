@@ -1,5 +1,8 @@
-import React, { useRef } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import React, { useEffect, useRef } from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 const cases = [
   {
@@ -22,15 +25,29 @@ const cases = [
   },
 ];
 
-function Card({ i, tag, title, result, gradient, progress }) {
-  // parallax per card
-  const y = useTransform(progress, [0, 1], [i * 40, -i * 40]);
-  const rotate = useTransform(progress, [0, 1], [0, i % 2 === 0 ? 2 : -2]);
-  const opacity = useTransform(progress, [0, 0.15, 1], [0, 1, 1]);
+function Card({ i, tag, title, result, gradient }) {
+  const cardRef = useRef(null);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.from(cardRef.current, {
+        y: 30,
+        autoAlpha: 0,
+        duration: 0.8,
+        ease: 'power3.out',
+        delay: i * 0.08,
+        scrollTrigger: {
+          trigger: cardRef.current,
+          start: 'top 85%',
+        },
+      });
+    }, cardRef);
+    return () => ctx.revert();
+  }, [i]);
 
   return (
-    <motion.div
-      style={{ y, rotate, opacity }}
+    <div
+      ref={cardRef}
       className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 text-white backdrop-blur-md"
     >
       <div className={`pointer-events-none absolute -inset-px bg-gradient-to-br ${gradient} opacity-0 transition-opacity duration-300 group-hover:opacity-100`} />
@@ -39,30 +56,41 @@ function Card({ i, tag, title, result, gradient, progress }) {
         <h3 className="mt-3 text-lg font-medium leading-tight">{title}</h3>
         <div className="mt-6 inline-flex items-center rounded-xl border border-white/15 bg-white/10 px-3 py-1.5 text-sm">{result}</div>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
 export default function CaseStudies() {
-  const ref = useRef(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] });
+  const sectionRef = useRef(null);
 
-  const titleY = useTransform(scrollYProgress, [0, 1], [40, -40]);
-  const titleOpacity = useTransform(scrollYProgress, [0, 0.2, 1], [0, 1, 1]);
-  const glowOpacity = useTransform(scrollYProgress, [0, 0.5, 1], [0.1, 0.35, 0.2]);
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.from('[data-cases="title"]', {
+        y: 40,
+        autoAlpha: 0,
+        duration: 0.9,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: 'top 80%',
+        },
+      });
+    }, sectionRef);
+    return () => ctx.revert();
+  }, []);
 
   return (
-    <section id="work" ref={ref} className="relative bg-black py-24">
-      <motion.div style={{ opacity: glowOpacity }} className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_20%,rgba(168,85,247,0.25),transparent_50%)]" />
+    <section id="work" ref={sectionRef} className="relative bg-black py-24">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_20%,rgba(168,85,247,0.25),transparent_50%)]" />
       <div className="mx-auto max-w-7xl px-6 text-white lg:px-8">
-        <motion.div style={{ y: titleY, opacity: titleOpacity }} className="mx-auto max-w-2xl text-center">
+        <div data-cases="title" className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">Selected work</h2>
           <p className="mt-3 text-white/70">Scroll to explore outcomes from recent product launches and growth programs.</p>
-        </motion.div>
+        </div>
 
         <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {cases.map((c, i) => (
-            <Card key={c.title} i={i} progress={scrollYProgress} {...c} />
+            <Card key={c.title} i={i} {...c} />
           ))}
         </div>
       </div>

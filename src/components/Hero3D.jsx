@@ -1,24 +1,28 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useEffect, useRef } from 'react';
 import { ArrowRight, Sparkles, Shield, Rocket } from 'lucide-react';
 import Spline from '@splinetool/react-spline';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-const container = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: { staggerChildren: 0.12 }
-  }
-};
-
-const item = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } }
-};
+gsap.registerPlugin(ScrollTrigger);
 
 export default function Hero3D() {
+  const rootRef = useRef(null);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+      tl.from('[data-hero="chip"]', { y: 20, autoAlpha: 0, duration: 0.6 })
+        .from('[data-hero="title"]', { y: 24, autoAlpha: 0, duration: 0.8 }, '-=0.2')
+        .from('[data-hero="desc"]', { y: 18, autoAlpha: 0, duration: 0.6 }, '-=0.3')
+        .from('[data-hero="cta"] > *', { y: 16, autoAlpha: 0, stagger: 0.08, duration: 0.5 }, '-=0.2')
+        .from('[data-hero="trust"]', { y: 12, autoAlpha: 0, duration: 0.5 }, '-=0.2');
+    }, rootRef);
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <section className="relative overflow-hidden bg-black text-white">
+    <section ref={rootRef} className="relative overflow-hidden bg-black text-white">
       {/* Background grid + glow */}
       <div className="pointer-events-none absolute inset-0 opacity-40">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(59,130,246,0.25),transparent_40%),radial-gradient(circle_at_80%_30%,rgba(236,72,153,0.2),transparent_40%),radial-gradient(circle_at_50%_90%,rgba(16,185,129,0.25),transparent_45%)]" />
@@ -27,32 +31,21 @@ export default function Hero3D() {
 
       <div className="mx-auto flex max-w-7xl flex-col-reverse items-center gap-10 px-6 py-24 md:flex-row md:py-28 lg:gap-16 lg:px-8">
         {/* Left: copy */}
-        <motion.div
-          className="relative z-10 w-full md:w-1/2"
-          variants={container}
-          initial="hidden"
-          animate="show"
-        >
-          <motion.div variants={item} className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 backdrop-blur">
+        <div className="relative z-10 w-full md:w-1/2">
+          <div data-hero="chip" className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 backdrop-blur">
             <Sparkles className="h-4 w-4 text-amber-300" />
             <span className="text-sm text-white/80">Interactive. Futuristic. Minimal.</span>
-          </motion.div>
+          </div>
 
-          <motion.h1
-            variants={item}
-            className="text-balance text-4xl font-semibold leading-[1.05] tracking-tight md:text-5xl lg:text-6xl"
-          >
+          <h1 data-hero="title" className="text-balance text-4xl font-semibold leading-[1.05] tracking-tight md:text-5xl lg:text-6xl">
             We design growth for brands that move at the speed of tech
-          </motion.h1>
+          </h1>
 
-          <motion.p
-            variants={item}
-            className="mt-4 max-w-xl text-lg text-white/70 md:text-xl"
-          >
+          <p data-hero="desc" className="mt-4 max-w-xl text-lg text-white/70 md:text-xl">
             A marketing agency crafting immersive campaigns, performance funnels, and product launches powered by 3D, motion, and data.
-          </motion.p>
+          </p>
 
-          <motion.div variants={item} className="mt-8 flex flex-wrap items-center gap-4">
+          <div data-hero="cta" className="mt-8 flex flex-wrap items-center gap-4">
             <a
               href="#work"
               className="group inline-flex items-center justify-center gap-2 rounded-xl bg-white px-5 py-3 font-medium text-black transition-transform duration-300 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-white/50"
@@ -67,17 +60,17 @@ export default function Hero3D() {
               Book a strategy call
               <Rocket className="h-4 w-4" />
             </a>
-          </motion.div>
+          </div>
 
-          <motion.div variants={item} className="mt-6 flex items-center gap-4 text-white/60">
+          <div data-hero="trust" className="mt-6 flex items-center gap-4 text-white/60">
             <div className="inline-flex items-center gap-2">
               <Shield className="h-4 w-4" />
               <span className="text-sm">Trusted by startups & enterprises</span>
             </div>
             <div className="h-4 w-px bg-white/10" />
             <div className="text-sm">Avg. 4.9/5 client satisfaction</div>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
 
         {/* Right: Spline 3D scene */}
         <div className="relative z-0 h-[340px] w-full md:h-[520px] md:w-1/2 lg:h-[640px]">

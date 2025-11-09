@@ -1,6 +1,9 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useEffect, useRef } from 'react';
 import { Rocket, BarChart3, Palette, Megaphone } from 'lucide-react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 const services = [
   {
@@ -30,8 +33,27 @@ const services = [
 ];
 
 export default function Services() {
+  const sectionRef = useRef(null);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.from('[data-service-card]', {
+        y: 16,
+        autoAlpha: 0,
+        duration: 0.6,
+        ease: 'power3.out',
+        stagger: 0.08,
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: 'top 70%',
+        },
+      });
+    }, sectionRef);
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <section id="services" className="relative bg-black py-24 text-white">
+    <section id="services" ref={sectionRef} className="relative bg-black py-24 text-white">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">Capabilities engineered for impact</h2>
@@ -39,13 +61,10 @@ export default function Services() {
         </div>
 
         <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-          {services.map((s, i) => (
-            <motion.div
+          {services.map((s) => (
+            <div
               key={s.title}
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.3 }}
-              transition={{ duration: 0.6, delay: i * 0.08, ease: [0.16, 1, 0.3, 1] }}
+              data-service-card
               className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm"
             >
               <div className={`pointer-events-none absolute -inset-px bg-gradient-to-br ${s.accent} opacity-0 transition-opacity duration-300 group-hover:opacity-100`} />
@@ -56,7 +75,7 @@ export default function Services() {
                 <h3 className="mt-4 text-lg font-medium">{s.title}</h3>
                 <p className="mt-2 text-sm text-white/70">{s.desc}</p>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>
