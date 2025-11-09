@@ -46,13 +46,25 @@ export default function MarqueeLogos() {
   return (
     <section className="relative overflow-hidden bg-black py-10">
       <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-white/[0.02] to-transparent" />
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.4 }}
+        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        className="mx-auto max-w-7xl px-6 lg:px-8"
+      >
         <div className="mb-6 text-center text-sm uppercase tracking-widest text-white/50">Brands we’ve accelerated</div>
-      </div>
-      <div className="relative flex gap-6 overflow-hidden">
+      </motion.div>
+      <motion.div
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true, amount: 0.3 }}
+        transition={{ duration: 0.8, ease: 'easeOut' }}
+        className="relative flex gap-6 overflow-hidden"
+      >
         <Strip />
         <Strip reverse />
-      </div>
+      </motion.div>
     </section>
   );
 }

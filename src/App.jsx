@@ -3,6 +3,8 @@ import Hero3D from './components/Hero3D';
 import MarqueeLogos from './components/MarqueeLogos';
 import Services from './components/Services';
 import CTAContact from './components/CTAContact';
+import CaseStudies from './components/CaseStudies';
+import ScrollProgress from './components/ScrollProgress';
 
 function Navbar() {
   return (
@@ -39,11 +41,13 @@ function Footer() {
 export default function App() {
   return (
     <div className="min-h-screen bg-black font-inter">
+      <ScrollProgress />
       <Navbar />
       <main>
         <Hero3D />
         <MarqueeLogos />
         <Services />
+        <CaseStudies />
         <CTAContact />
       </main>
       <Footer />
